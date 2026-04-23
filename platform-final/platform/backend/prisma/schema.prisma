@@ -1,0 +1,56 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  role      String   // "PATIENT" or "DOCTOR"
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?  // for patients
+  createdAt DateTime @default(now())
+
+  doctorProfile DoctorProfile?
+  appointments  Appointment[]  @relation("PatientAppointments")
+}
+
+model Hospital {
+  id       String          @id @default(uuid())
+  name     String
+  location String?
+  doctors  DoctorProfile[]
+}
+
+model DoctorProfile {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id])
+  hospitalId     String
+  hospital       Hospital @relation(fields: [hospitalId], references: [id])
+  specialization String
+  category       String   // "General Physician", "Specialist", "Surgeon", "Emergency Doctor"
+  doctorRole     String   // "Consultant", "Junior Doctor", "Visiting Doctor", "Duty Doctor"
+  
+  appointments   Appointment[] @relation("DoctorAppointments")
+}
+
+model Appointment {
+  id               String        @id @default(uuid())
+  patientId        String
+  patient          User          @relation("PatientAppointments", fields: [patientId], references: [id])
+  doctorId         String
+  doctor           DoctorProfile @relation("DoctorAppointments", fields: [doctorId], references: [id])
+  hospitalId       String
+  status           String        // "PENDING", "IN_PROGRESS", "COMPLETED", "SKIPPED", "CANCELLED"
+  tokenNumber      Int
+  issueDescription String
+  estimatedTime    DateTime?
+  skipReason       String?
+  createdAt        DateTime      @default(now())
+}
