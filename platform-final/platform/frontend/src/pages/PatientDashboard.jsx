@@ -7,7 +7,7 @@ import { LogOut, Calendar, Clock, MapPin, User, AlertCircle, ArrowRight, Activit
 import { requestNotificationPermission, db as firebaseDb } from '../firebase';
 import { doc, setDoc } from 'firebase/firestore';
 
-const API = 'http://localhost:5001';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 function WaveBackground() {
   return (

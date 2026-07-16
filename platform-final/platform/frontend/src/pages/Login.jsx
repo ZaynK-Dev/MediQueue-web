@@ -4,6 +4,8 @@ import axios from 'axios';
 import { HeartPulse, User, Stethoscope, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,7 +31,7 @@ export default function Login() {
           setLoading(false);
           return;
         }
-        const res = await axios.post('http://localhost:5001/api/auth/signup/patient', {
+        const res = await axios.post(`${API}/api/auth/signup/patient`, {
           name: formData.name, email: formData.email,
           password: formData.password, phone: formData.phone,
         });
@@ -37,7 +39,7 @@ export default function Login() {
         localStorage.setItem('user', JSON.stringify(res.data.user));
         navigate('/patient');
       } else {
-        const res = await axios.post('http://localhost:5001/api/auth/login', {
+        const res = await axios.post(`${API}/api/auth/login`, {
           email: formData.email, password: formData.password,
         });
         localStorage.setItem('token', res.data.token);
